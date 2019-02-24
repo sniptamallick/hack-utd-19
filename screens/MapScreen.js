@@ -12,6 +12,8 @@ import Touchable from 'react-native-platform-touchable';
 import { MapView } from 'expo';
 import mystyles from '.././styles/styles';
 
+//import Geocoder from 'react-native-geocoding';
+//Geocoder.setApiKey(AIzaSyCfnhC8DJzYBpGlMKmQG8ukDSOm2w9q5C4);
 
 const INTIIAL_REGION = {
   latitude: 32.7767,
@@ -23,6 +25,8 @@ const { width, height } = Dimensions.get('window');
 
 const CARD_HEIGHT = height / 4;
 const CARD_WIDTH = CARD_HEIGHT - 100;
+
+const streetName = 'hold';
 
 class MapScreen extends Component {
 
@@ -39,8 +43,9 @@ class MapScreen extends Component {
   componentWillMount() {
     this.index = 0;
     this.animation = new Animated.Value(0);
-    const ref = firebase.database().ref('locationMap');
-    ref.on('value', (snapshot) => { this.setState({ markers: snapshot.val().markers, region: snapshot.val().region }); } );
+    //axios.get('https://api.jsonbin.io/b/5bff17e790a73066ac17062b/1').then(response => this.setState(response.data));
+    var ref = firebase.database().ref("locationMap");
+    ref.on("value", (snapshot) => {this.setState({markers: snapshot.val().markers, region: snapshot.val().region})})
   }
   componentDidMount() {
     // We should detect when scrolling has stopped then animate
@@ -74,7 +79,7 @@ class MapScreen extends Component {
   }
   render() {
     const { params } = this.props.navigation.state;
-  //  const mode = params ? params.mode : 0;
+    const mode = params ? params.mode : 0;
     const interpolations = this.state.markers.map((marker, index) => {
       const inputRange = [
         (index - 1) * CARD_WIDTH * 3.5,
@@ -97,7 +102,7 @@ class MapScreen extends Component {
       
       <View style={styles.container}>
         <MapView
-      //    ref={map => this.map = map}
+          ref={map => this.map = map}
           initialRegion={INTIIAL_REGION}
           style={styles.container}
         >
@@ -157,8 +162,7 @@ class MapScreen extends Component {
                 title: 'Location',
                 location: marker.title,
                 description: marker.description,
-                image: this.state.markers[index].image,
-                website: marker.website
+                image: this.state.markers[index].image
               })
             }
             >
