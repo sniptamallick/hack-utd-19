@@ -1,4 +1,4 @@
-# Foundations Community Service Project
+# Food For Thought
 ## Purpose
 This application could be used for solving food insecurity on Campus
 
