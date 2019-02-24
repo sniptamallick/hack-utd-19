@@ -24,8 +24,6 @@ const { width, height } = Dimensions.get('window');
 const CARD_HEIGHT = height / 4;
 const CARD_WIDTH = CARD_HEIGHT - 100;
 
-const streetName = 'hold';
-
 class MapScreen extends Component {
 
     static navigationOptions = {
@@ -41,8 +39,8 @@ class MapScreen extends Component {
   componentWillMount() {
     this.index = 0;
     this.animation = new Animated.Value(0);
-    var ref = firebase.database().ref("locationMap");
-    ref.on("value", (snapshot) => {this.setState({markers: snapshot.val().markers, region: snapshot.val().region})})
+    const ref = firebase.database().ref('locationMap');
+    ref.on('value', (snapshot) => { this.setState({ markers: snapshot.val().markers, region: snapshot.val().region }); } );
   }
   componentDidMount() {
     // We should detect when scrolling has stopped then animate
@@ -76,7 +74,7 @@ class MapScreen extends Component {
   }
   render() {
     const { params } = this.props.navigation.state;
-    const mode = params ? params.mode : 0;
+  //  const mode = params ? params.mode : 0;
     const interpolations = this.state.markers.map((marker, index) => {
       const inputRange = [
         (index - 1) * CARD_WIDTH * 3.5,
@@ -99,7 +97,7 @@ class MapScreen extends Component {
       
       <View style={styles.container}>
         <MapView
-          ref={map => this.map = map}
+      //    ref={map => this.map = map}
           initialRegion={INTIIAL_REGION}
           style={styles.container}
         >

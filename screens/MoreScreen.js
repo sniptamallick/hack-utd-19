@@ -22,13 +22,18 @@ import styles from '.././styles/styles';
 import createIconSetFromFontello from '@expo/vector-icons/createIconSetFromFontello';
 
 
+
 const INITIAL_TIME = new Date();
+let key = 0;
 class MoreScreen extends React.Component {
 
   componentWillMount() {
-
     //Reading the location data from firebase
-   const ref = firebase.database().ref('Food_locations');
+   let ref = firebase.database().ref('Keys');
+   ref.on('value', (snapshot) => { this.setState({ key: snapshot.val() }); });
+   key = this.state.key;
+   console.log(key);
+   ref = firebase.database().ref('Food_locations');
    ref.on('value', (snapshot) => { this.setState({ DATA_RETURNED: snapshot.val() }); });
    }
   static navigationOptions = {
@@ -47,7 +52,8 @@ class MoreScreen extends React.Component {
       DATA_RETURNED: { markers: [], region: {} },
       showPicker: false,
       showPicker2: false,
-      description: ''
+      description: '',
+      key: 0
     };
 
      setDate = (newDate) => {
@@ -64,6 +70,7 @@ class MoreScreen extends React.Component {
     Then we try to push those values to our firebase database
     It will give the optimal message depending upon the result
     */
+  
     login = () => {
       const { name, email, Time, location, description } = this.state;
       const localDate = Time.toLocaleDateString();
@@ -72,25 +79,31 @@ class MoreScreen extends React.Component {
       const time = localTime;
       const customerName = name;
       const emailId = email;
-      const desc = description
+      const desc = description;
       //It will not allow login when any of the fields is unaddressed
-      if (this.state.name === ''  || this.state.description === '' || this.state.email === '' || this.state.Time === INITIAL_TIME || this.state.location === '') {
+      if (this.state.name === '' || this.state.description === '' || this.state.email === '' || this.state.Time === INITIAL_TIME || this.state.location === '') {
         Alert.alert('Not enough information');
         return;
       }
+        
         //Pushing the information to firebase
         firebase.database().ref('/Food_Items/')
-        .push({ customerName, emailId, apptDate, time, location, desc })
+        .child(key + 1).set({ customerName, emailId, apptDate, time, location, desc })
         .then(() => {
           Alert.alert('Your item has been added, Thank You for being considerate to others');
           //Reset the information
+          //Increase the value of key by 1 and push it to firebase
+          key = key + 1;
+          firebase.database().ref().child('Keys').set(key);
           this.setState({ name: '', email: '', description: '', Time: INITIAL_TIME, location: '' });
         })
         .catch(() => {
-          if (this.state.name !== '')  {
+          if (this.state.name !== '') {
             Alert.alert('Not enough information');
+            key = '';
           }
         });
+
       this.setState({ showPicker2: false });
     };
 
